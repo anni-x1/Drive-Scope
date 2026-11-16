@@ -1,0 +1,7 @@
+import mongoose, { Schema } from "mongoose";
+const AccountSchema = new Schema({ userId: { type: String, required: true, index: true }, googleId: { type: String, required: true }, email: { type: String, required: true }, name: String, picture: String, encryptedRefreshToken: { type: String, required: true }, scopes: [String], syncState: { type: String, default: "never" }, syncError: String, lastSyncedAt: Date, pageToken: String, nextPageToken: String }, { timestamps: true });
+AccountSchema.index({ userId: 1, googleId: 1 }, { unique: true });
+const FileSchema = new Schema({ userId: { type: String, required: true }, accountId: { type: Schema.Types.ObjectId, required: true }, driveFileId: { type: String, required: true }, name: String, mimeType: String, size: Number, createdTime: Date, modifiedTime: Date, parents: [String], owners: [{ displayName: String, emailAddress: String }], driveId: String, shared: Boolean, sharedWithMeTime: Date, trashed: Boolean, starred: Boolean, webViewLink: String, md5Checksum: String, capabilities: Schema.Types.Mixed, shortcutDetails: Schema.Types.Mixed }, { timestamps: true });
+FileSchema.index({ userId: 1, accountId: 1, driveFileId: 1 }, { unique: true }); FileSchema.index({ userId: 1, name: "text" }); FileSchema.index({ userId: 1, modifiedTime: -1 });
+export const Account = mongoose.models.DriveAccount || mongoose.model("DriveAccount", AccountSchema);
+export const DriveFile = mongoose.models.DriveFile || mongoose.model("DriveFile", FileSchema);
